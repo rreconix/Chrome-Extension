@@ -9,6 +9,7 @@ const pick_color = document.getElementById('pick-color');
 const clear_colors = document.getElementById('clear-colors');
 const body = document.getElementsByTagName('body')[0];
 const html = document.getElementsByTagName('html')[0];
+const cover = document.getElementById('cover');
 
 function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -20,12 +21,11 @@ chrome.storage.sync.get('colorsArr', ({ colorsArr }) => {
         chrome.storage.sync.set({colorsArr: []});
         return;
     }
-    else if(colorsArr.length === 0) return;
+    else if(colorsArr.length === 0){
+        cover.style.display = 'block';
+    }
     else if(colorsArr.length >= 9) colorsArr = colorsArr.slice(-10);
-    console.log(colorsArr.length)
-    console.log(boxes.length)
     for(let i = 0; i < colorsArr.length; i++){
-        console.log(boxes[i] + ' ' + colorsArr[colorsArr.length -1 - i])
         boxes[i].style.backgroundColor = colorsArr[colorsArr.length -1 - i];
         boxes[i].style.border = '2px solid ' + colorsArr[colorsArr.length -1 - i];
     }
@@ -34,8 +34,6 @@ chrome.storage.sync.get('colorsArr', ({ colorsArr }) => {
     rgb.textContent = hexToRgb(colorsArr[colorsArr.length - 1]);
     selected_color.style.backgroundColor = colorsArr[colorsArr.length - 1];
 })
-
-
 
 pick_color.addEventListener('click', () => {
     html.style.height = '25px';
@@ -54,17 +52,13 @@ pick_color.addEventListener('click', () => {
         eyeDropper.open({ signal: abortController.signal }).then(result => {
             body.style.display = 'block';
             html.style.height = '378px';
-    
+            cover.style.display = 'none';
+            
             chrome.storage.sync.get('colorsArr', ({ colorsArr }) => {
                 colorsArr.push(result.sRGBHex);
                 if(colorsArr.length >= 9) colorsArr = colorsArr.slice(-10);
                 chrome.storage.sync.set({ colorsArr });
-                console.log(' ')
-                console.log(colorsArr.length)
-                console.log(boxes.length)
-                console.log(' ')
                 for(let i = 0; i < colorsArr.length; i++){
-                    console.log(boxes[i] + ' ' + colorsArr[colorsArr.length -1 - i])
                     boxes[i].style.backgroundColor = colorsArr[colorsArr.length - 1 - i];
                     boxes[i].style.border = '2px solid ' + colorsArr[colorsArr.length -1 - i];
                 }
@@ -101,6 +95,7 @@ box.forEach(el => {
 
 clear_colors.addEventListener('click', () => {
     colorsArr = [];
+    cover.style.display = 'block';
     chrome.storage.sync.set({ colorsArr });
     for(let i = 0; i < 10; i++){
         boxes[i].style.backgroundColor = 'transparent';
