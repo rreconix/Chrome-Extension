@@ -7,7 +7,8 @@ const selected_color = document.getElementById('selected-color');
 const box = document.querySelectorAll('.box');
 const pick_color = document.getElementById('pick-color');
 const clear_colors = document.getElementById('clear-colors');
-
+const body = document.getElementsByTagName('body')[0];
+const html = document.getElementsByTagName('html')[0];
 
 
 
@@ -29,40 +30,46 @@ chrome.storage.sync.get('colorsArr', ({ colorsArr }) => {//gets the old colors b
     selected_color.style.backgroundColor = colorsArr[colorsArr.length - 1];
 })
 
+
 pick_color.addEventListener('click', () => {
-//     chrome.runtime.sendMessage('hello world')
-//     document.querySelector('*').style.setProperty('display', 'none', 'important');
-
-
+    
+    html.style.height = '25px';
+    body.style.display = 'none';
+//        chrome.runtime.sendMessage('hello world')
     const resultElement = document.getElementById('hex');
     if (!window.EyeDropper) {
       resultElement.textContent = 'Your browser does not support the EyeDropper API';
       return;
     }
-  
-    const eyeDropper = new EyeDropper();
-    eyeDropper.open().then(result => {
-
-        chrome.storage.sync.get('colorsArr', ({ colorsArr }) => {
-            colorsArr.push(result.sRGBHex);
-            if(colorsArr.length > 9) colorsArr.slice(-10);
-            console.log(colorsArr)
-            chrome.storage.sync.set({ colorsArr })
-            
-            for(let i = 0; i < colorsArr.length; i++){
-                boxes[i].style.backgroundColor = colorsArr[colorsArr.length - 1 - i];
-                boxes[i].style.border = '2px solid ' + colorsArr[colorsArr.length - 1 - i];
-            }
-        })
-
-
-        resultElement.textContent = result.sRGBHex;
-        selected_color.style.backgroundColor = result.sRGBHex;
-        rgb.textContent = hexToRgb(result.sRGBHex);
-
-    }).catch(e => {
-        return e
-    });
+    
+    setTimeout(() => {
+        const eyeDropper = new EyeDropper();
+        eyeDropper.open().then(result => {
+            body.style.display = 'block';
+            html.style.height = '378px';
+    
+            chrome.storage.sync.get('colorsArr', ({ colorsArr }) => {
+                colorsArr.push(result.sRGBHex);
+                if(colorsArr.length > 9) colorsArr.slice(-10);
+                chrome.storage.sync.set({ colorsArr });
+                
+                for(let i = 0; i < colorsArr.length; i++){
+                    boxes[i].style.backgroundColor = colorsArr[colorsArr.length - 1 - i];
+                    boxes[i].style.border = '2px solid ' + colorsArr[colorsArr.length - 1 - i];
+                }
+            })
+    
+    
+            resultElement.textContent = result.sRGBHex;
+            selected_color.style.backgroundColor = result.sRGBHex;
+            rgb.textContent = hexToRgb(result.sRGBHex);
+    
+        }).catch(e => {
+            body.style.display = 'block';
+            html.style.height = '378px';
+        });
+    }, 50)
+    
 });
 
 box.forEach(el => {
