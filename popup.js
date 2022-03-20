@@ -21,28 +21,18 @@ chrome.storage.sync.get('colorsArr', ({ colorsArr }) => {
         return;
     }
     else if(colorsArr.length === 0) return;
-
+    else if(colorsArr.length >= 9) colorsArr = colorsArr.slice(-10);
+    console.log(colorsArr.length)
+    console.log(boxes.length)
     for(let i = 0; i < colorsArr.length; i++){
-        boxes[i].style.backgroundColor = colorsArr[colorsArr.length - 1 - i];
-        boxes[i].style.border = '2px solid ' + colorsArr[colorsArr.length - 1 - i];
+        console.log(boxes[i] + ' ' + colorsArr[colorsArr.length -1 - i])
+        boxes[i].style.backgroundColor = colorsArr[colorsArr.length -1 - i];
+        boxes[i].style.border = '2px solid ' + colorsArr[colorsArr.length -1 - i];
     }
 
     hex.textContent = colorsArr[colorsArr.length - 1];
     rgb.textContent = hexToRgb(colorsArr[colorsArr.length - 1]);
     selected_color.style.backgroundColor = colorsArr[colorsArr.length - 1];
-})
-
-//focusout, visibility change,
-const abortController = new AbortController();  
-document.addEventListener('keydown', (e) => {
-    if(["AltLeft", "AltRight", "MetaLeft", "MetaRight", "OSLeft", "OSRight"].includes(e.code))
-    abortController.abort();
-    window.close()
-})
-
-document.addEventListener('visibilitychange', () => {
-    abortController.abort();
-    window.close()
 })
 
 
@@ -59,7 +49,7 @@ pick_color.addEventListener('click', () => {
     
     setTimeout(() => {
         const eyeDropper = new EyeDropper();
-        
+        const abortController = new AbortController();
 
         eyeDropper.open({ signal: abortController.signal }).then(result => {
             body.style.display = 'block';
@@ -67,15 +57,18 @@ pick_color.addEventListener('click', () => {
     
             chrome.storage.sync.get('colorsArr', ({ colorsArr }) => {
                 colorsArr.push(result.sRGBHex);
-                if(colorsArr.length > 9) colorsArr.slice(-10);
+                if(colorsArr.length >= 9) colorsArr = colorsArr.slice(-10);
                 chrome.storage.sync.set({ colorsArr });
-                
+                console.log(' ')
+                console.log(colorsArr.length)
+                console.log(boxes.length)
+                console.log(' ')
                 for(let i = 0; i < colorsArr.length; i++){
+                    console.log(boxes[i] + ' ' + colorsArr[colorsArr.length -1 - i])
                     boxes[i].style.backgroundColor = colorsArr[colorsArr.length - 1 - i];
-                    boxes[i].style.border = '2px solid ' + colorsArr[colorsArr.length - 1 - i];
+                    boxes[i].style.border = '2px solid ' + colorsArr[colorsArr.length -1 - i];
                 }
             })
-    
     
             resultElement.textContent = result.sRGBHex;
             selected_color.style.backgroundColor = result.sRGBHex;
@@ -86,6 +79,14 @@ pick_color.addEventListener('click', () => {
             html.style.height = '378px';
         });
 
+        document.addEventListener('visibilitychange', () => {
+            window.close();
+        })
+
+        document.addEventListener('keydown', (e) => {
+            if(["AltLeft", "AltRight", "MetaLeft", "MetaRight", "OSLeft", "OSRight"].includes(e.code))
+                window.close();
+        })
     }, 50)
     
 });
