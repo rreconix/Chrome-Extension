@@ -28,8 +28,17 @@ chrome.storage.sync.get('colorsArr', ({ colorsArr }) => {
     selected_color.style.backgroundColor = colorsArr[colorsArr.length - 1];
 })
 
+//focusout, visibility change,
+
+
+
+
 pick_color.addEventListener('click', () => {
     
+    document.addEventListener('visibilitychange', () => {
+        window.close()
+    })
+
     html.style.height = '25px';
     body.style.display = 'none';
     const resultElement = document.getElementById('hex');
@@ -60,6 +69,7 @@ pick_color.addEventListener('click', () => {
             resultElement.textContent = result.sRGBHex;
             selected_color.style.backgroundColor = result.sRGBHex;
             rgb.textContent = hexToRgb(result.sRGBHex);
+
     
         }).catch(e => {
             body.style.display = 'block';
