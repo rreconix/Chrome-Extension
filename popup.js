@@ -1,4 +1,4 @@
-let colorsArr = [];//export arr
+let colorsArr = [];
 const recent_box = document.querySelectorAll('.recent-box');
 let boxes = Array.from(recent_box);
 const hex = document.getElementById('hex');
@@ -10,14 +10,12 @@ const clear_colors = document.getElementById('clear-colors');
 const body = document.getElementsByTagName('body')[0];
 const html = document.getElementsByTagName('html')[0];
 
-
-
 function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return `rgb(${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)})`;
 }
 
-chrome.storage.sync.get('colorsArr', ({ colorsArr }) => {//gets the old colors back
+chrome.storage.sync.get('colorsArr', ({ colorsArr }) => {
     if(colorsArr.length === 0) return;
 
     for(let i = 0; i < colorsArr.length; i++){
@@ -30,13 +28,12 @@ chrome.storage.sync.get('colorsArr', ({ colorsArr }) => {//gets the old colors b
     selected_color.style.backgroundColor = colorsArr[colorsArr.length - 1];
 })
 
-
 pick_color.addEventListener('click', () => {
     
     html.style.height = '25px';
     body.style.display = 'none';
-//        chrome.runtime.sendMessage('hello world')
     const resultElement = document.getElementById('hex');
+
     if (!window.EyeDropper) {
       resultElement.textContent = 'Your browser does not support the EyeDropper API';
       return;
@@ -68,6 +65,7 @@ pick_color.addEventListener('click', () => {
             body.style.display = 'block';
             html.style.height = '378px';
         });
+
     }, 50)
     
 });
@@ -82,7 +80,7 @@ box.forEach(el => {
 
 clear_colors.addEventListener('click', () => {
     colorsArr = [];
-    chrome.storage.sync.set({ colorsArr })
+    chrome.storage.sync.set({ colorsArr });
     for(let i = 0; i < 10; i++){
         boxes[i].style.backgroundColor = 'transparent';
         boxes[i].style.border = '2px solid ' + getComputedStyle( boxes[i] ).getPropertyValue('--recent-box-border');
