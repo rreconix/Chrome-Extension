@@ -33,6 +33,18 @@ chrome.storage.sync.get('colorsArr', ({ colorsArr }) => {
 })
 
 //focusout, visibility change,
+const abortController = new AbortController();  
+document.addEventListener('keydown', (e) => {
+    if(["AltLeft", "AltRight", "MetaLeft", "MetaRight", "OSLeft", "OSRight"].includes(e.code))
+    abortController.abort();
+    window.close()
+})
+
+document.addEventListener('visibilitychange', () => {
+    abortController.abort();
+    window.close()
+})
+
 
 
 pick_color.addEventListener('click', () => {
@@ -47,7 +59,7 @@ pick_color.addEventListener('click', () => {
     
     setTimeout(() => {
         const eyeDropper = new EyeDropper();
-        const abortController = new AbortController();
+        
 
         eyeDropper.open({ signal: abortController.signal }).then(result => {
             body.style.display = 'block';
@@ -69,17 +81,10 @@ pick_color.addEventListener('click', () => {
             selected_color.style.backgroundColor = result.sRGBHex;
             rgb.textContent = hexToRgb(result.sRGBHex);
 
-
-            document.addEventListener('visibilitychange', () => {
-                abortController.abort();
-            });
-    
         }).catch(e => {
             body.style.display = 'block';
             html.style.height = '378px';
         });
-
-        
 
     }, 50)
     
