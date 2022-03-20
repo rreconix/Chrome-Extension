@@ -16,7 +16,11 @@ function hexToRgb(hex) {
 }
 
 chrome.storage.sync.get('colorsArr', ({ colorsArr }) => {
-    if(colorsArr.length === 0) return;
+    if(colorsArr===undefined){
+        chrome.storage.sync.set({colorsArr: []});
+        return;
+    }
+    else if(colorsArr.length === 0) return;
 
     for(let i = 0; i < colorsArr.length; i++){
         boxes[i].style.backgroundColor = colorsArr[colorsArr.length - 1 - i];
@@ -31,14 +35,7 @@ chrome.storage.sync.get('colorsArr', ({ colorsArr }) => {
 //focusout, visibility change,
 
 
-
-
 pick_color.addEventListener('click', () => {
-    
-    document.addEventListener('visibilitychange', () => {
-        window.close()
-    })
-
     html.style.height = '25px';
     body.style.display = 'none';
     const resultElement = document.getElementById('hex');
@@ -50,7 +47,9 @@ pick_color.addEventListener('click', () => {
     
     setTimeout(() => {
         const eyeDropper = new EyeDropper();
-        eyeDropper.open().then(result => {
+        const abortController = new AbortController();
+
+        eyeDropper.open({ signal: abortController.signal }).then(result => {
             body.style.display = 'block';
             html.style.height = '378px';
     
@@ -70,11 +69,17 @@ pick_color.addEventListener('click', () => {
             selected_color.style.backgroundColor = result.sRGBHex;
             rgb.textContent = hexToRgb(result.sRGBHex);
 
+
+            document.addEventListener('visibilitychange', () => {
+                abortController.abort();
+            });
     
         }).catch(e => {
             body.style.display = 'block';
             html.style.height = '378px';
         });
+
+        
 
     }, 50)
     
