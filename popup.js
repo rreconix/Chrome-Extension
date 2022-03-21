@@ -47,9 +47,7 @@ pick_color.addEventListener('click', () => {
     
     setTimeout(() => {
         const eyeDropper = new EyeDropper();
-        const abortController = new AbortController();
-
-        eyeDropper.open({ signal: abortController.signal }).then(result => {
+        eyeDropper.open().then(result => {
             body.style.display = 'block';
             html.style.height = '378px';
             cover.style.display = 'none';
