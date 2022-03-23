@@ -1,12 +1,12 @@
 let colorsArr = [];
 const recent_box = document.querySelectorAll('.recent-box');
-let boxes = Array.from(recent_box);
 const hex = document.getElementById('hex');
 const rgb = document.getElementById('rgb');
 const selected_color = document.getElementById('selected-color');
 const box = document.querySelectorAll('.box');
 const pick_color = document.getElementById('pick-color');
 const clear_colors = document.getElementById('clear-colors');
+const delete_color = document.getElementById('delete');
 const body = document.getElementsByTagName('body')[0];
 const html = document.getElementsByTagName('html')[0];
 const cover = document.getElementById('cover');
@@ -19,20 +19,24 @@ function hexToRgb(hex) {
 chrome.storage.sync.get('colorsArr', ({ colorsArr }) => {
     if(colorsArr===undefined){
         chrome.storage.sync.set({colorsArr: []});
-        return;
     }
     else if(colorsArr.length === 0){
         cover.style.display = 'block';
     }
-    else if(colorsArr.length >= 9) colorsArr = colorsArr.slice(-10);
-    for(let i = 0; i < colorsArr.length; i++){
-        boxes[i].style.backgroundColor = colorsArr[colorsArr.length -1 - i];
-        boxes[i].style.border = '2px solid ' + colorsArr[colorsArr.length -1 - i];
+    else if(colorsArr.length >= 9){
+        colorsArr = colorsArr.slice(-10);
     }
-
-    hex.textContent = colorsArr[colorsArr.length - 1];
-    rgb.textContent = hexToRgb(colorsArr[colorsArr.length - 1]);
-    selected_color.style.backgroundColor = colorsArr[colorsArr.length - 1];
+    else{
+        for(let i = 0; i < colorsArr.length; i++){
+            recent_box[i].style.backgroundColor = colorsArr[colorsArr.length -1 - i];
+            recent_box[i].style.border = '2px solid ' + colorsArr[colorsArr.length -1 - i];
+        }
+    
+        hex.textContent = colorsArr[colorsArr.length - 1];
+        rgb.textContent = hexToRgb(colorsArr[colorsArr.length - 1]);
+        selected_color.style.backgroundColor = colorsArr[colorsArr.length - 1];
+    }
+    
 })
 
 pick_color.addEventListener('click', () => {
@@ -44,12 +48,14 @@ pick_color.addEventListener('click', () => {
       resultElement.textContent = 'Your browser does not support the EyeDropper API';
       return;
     }
-    
+
+    recent_box.forEach(e => e.classList.remove('active'));
+
     setTimeout(() => {
         const eyeDropper = new EyeDropper();
         eyeDropper.open().then(result => {
             body.style.display = 'block';
-            html.style.height = '378px';
+            html.style.height = '0px';
             cover.style.display = 'none';
             
             chrome.storage.sync.get('colorsArr', ({ colorsArr }) => {
@@ -57,8 +63,8 @@ pick_color.addEventListener('click', () => {
                 if(colorsArr.length >= 9) colorsArr = colorsArr.slice(-10);
                 chrome.storage.sync.set({ colorsArr });
                 for(let i = 0; i < colorsArr.length; i++){
-                    boxes[i].style.backgroundColor = colorsArr[colorsArr.length - 1 - i];
-                    boxes[i].style.border = '2px solid ' + colorsArr[colorsArr.length -1 - i];
+                    recent_box[i].style.backgroundColor = colorsArr[colorsArr.length - 1 - i];
+                    recent_box[i].style.border = '2px solid ' + colorsArr[colorsArr.length -1 - i];
                 }
             })
     
@@ -68,7 +74,7 @@ pick_color.addEventListener('click', () => {
 
         }).catch(e => {
             body.style.display = 'block';
-            html.style.height = '378px';
+            html.style.height = '0px';
         });
 
         document.addEventListener('visibilitychange', () => {
@@ -79,7 +85,7 @@ pick_color.addEventListener('click', () => {
             if(["AltLeft", "AltRight", "MetaLeft", "MetaRight", "OSLeft", "OSRight"].includes(e.code))
                 window.close();
         })
-    }, 50)
+    }, 50);
     
 });
 
@@ -88,21 +94,42 @@ box.forEach(el => {
         if(e.target.textContent !== ''){
             navigator.clipboard.writeText(e.target.textContent);
         }
-    })
+    });
 })
 
 clear_colors.addEventListener('click', () => {
-    colorsArr = [];
     cover.style.display = 'block';
-    chrome.storage.sync.set({ colorsArr });
+    chrome.storage.sync.set({colorsArr: []});
     for(let i = 0; i < 10; i++){
-        boxes[i].style.backgroundColor = 'transparent';
-        boxes[i].style.border = '2px solid ' + getComputedStyle( boxes[i] ).getPropertyValue('--recent-box-border');
+        recent_box[i].style.backgroundColor = 'transparent';
+        recent_box[i].style.border = '2px solid ' + getComputedStyle(recent_box[i] ).getPropertyValue('--recent-box-border');
         selected_color.style.backgroundColor = 'white';
-        
     }
     box.forEach(e => e.textContent = '');
-})
+});
+
+delete_color.addEventListener('click', () => {
+    chrome.storage.sync.get('colorsArr', ({ colorsArr }) => {
+        recent_box.forEach((el, index) => {
+            if(el.classList.contains('active')){
+                colorsArr.splice(colorsArr.length - 1 - index, 1);
+                for(let i = 0; i < 10; i++){
+                    recent_box[i].style.backgroundColor = '';
+                    recent_box[i].style.borderColor = '';
+                }
+                
+                for(let i = 0; i < colorsArr.length; i++){
+                    recent_box[i].style.backgroundColor = colorsArr[colorsArr.length - 1 - i];
+                    recent_box[i].style.border = '2px solid ' + colorsArr[colorsArr.length -1 - i];
+                }
+
+                chrome.storage.sync.set({ colorsArr });
+
+                recent_box.forEach(e => e.classList.remove('active'));
+            }
+        })
+    })
+});
 
 function parseColor(color) {
     var arr=[]; color.replace(/[\d+\.]+/g, function(v) { arr.push(parseFloat(v)); });
@@ -115,10 +142,13 @@ function toHex(int) {
 }
 
 recent_box.forEach(e => {
-    e.addEventListener('click', () => { 
+    e.addEventListener('click', () => {
         if(e.style.backgroundColor === 'transparent' || e.style.backgroundColor === '') return;
+        recent_box.forEach(e => e.classList.remove('active'));
+        e.classList.add('active');
+
         hex.textContent = parseColor(e.style.backgroundColor);
         rgb.textContent = e.style.backgroundColor;
         selected_color.style.backgroundColor = e.style.backgroundColor;
-    })
-})
+    });
+});

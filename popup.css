@@ -42,6 +42,14 @@
     align-items: center;
 }
 
+.active{
+    border: 1px solid black;
+}
+
+html{
+    height: 0px;
+}
+
 #selected-text{
     font-size: 1.25em;
     color: var(--selected-color-text);
@@ -95,21 +103,26 @@
     font-size: 1.25em;
 }
 
-#recent-top-row{
+.recent-row{
     display: flex;
+    align-items: center;
 }
 
 #clear-colors{
-    display: flex;
-    align-items: center;
     margin-left: auto;
     cursor: pointer;
 }
 
-#clear-colors:hover{
-    text-decoration: underline;
+#delete{
+    margin-left: auto;
+    padding: 0.2em;
+    width: fit-content;
+    cursor: pointer;
 }
 
+.underline:hover{
+    text-decoration: underline;
+}
 
 #colors{
     display: flex;
