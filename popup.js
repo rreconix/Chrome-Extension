@@ -114,12 +114,13 @@ delete_color.addEventListener('click', () => {
             if(el.classList.contains('active')){
                 colorsArr.splice(colorsArr.length - 1 - index, 1);
 
-                let nextEl = colorsArr[index];
+                let color = colorsArr[colorsArr.length - 1 - index];
+                if(!color) color = colorsArr[colorsArr.length - index];
 
-                hex.textContent = parseColor(nextEl.style.backgroundColor);
-                rgb.textContent = nextEl.style.backgroundColor;
-                selected_color.style.backgroundColor = nextEl.style.backgroundColor;
-
+                hex.textContent = color;
+                rgb.textContent = hexToRgb(color);
+                selected_color.style.backgroundColor = color;
+                
                 for(let i = 0; i < 10; i++){
                     recent_box[i].style.backgroundColor = '';
                     recent_box[i].style.borderColor = '';
@@ -138,7 +139,7 @@ delete_color.addEventListener('click', () => {
     })
 });
 
-function parseColor(color) {
+function rgbToHex(color) {
     var arr=[]; color.replace(/[\d+\.]+/g, function(v) { arr.push(parseFloat(v)); });
     return "#" + arr.slice(0, 3).map(toHex).join("");
 }
@@ -154,7 +155,7 @@ recent_box.forEach(e => {
         recent_box.forEach(e => e.classList.remove('active'));
         e.classList.add('active');
 
-        hex.textContent = parseColor(e.style.backgroundColor);
+        hex.textContent = rgbToHex(e.style.backgroundColor);
         rgb.textContent = e.style.backgroundColor;
         selected_color.style.backgroundColor = e.style.backgroundColor;
     });
