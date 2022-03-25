@@ -48,6 +48,7 @@
 
 html{
     height: 0px;
+    user-select: none;
 }
 
 #selected-text{
