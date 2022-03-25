@@ -132,8 +132,7 @@ delete_color.addEventListener('click', () => {
                 }
 
                 chrome.storage.sync.set({ colorsArr });
-
-                recent_box.forEach(e => e.classList.remove('active'));
+                
             }
         })
     })
