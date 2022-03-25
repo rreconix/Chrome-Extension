@@ -113,13 +113,26 @@ delete_color.addEventListener('click', () => {
         recent_box.forEach((el, index) => {
             if(el.classList.contains('active')){
                 colorsArr.splice(colorsArr.length - 1 - index, 1);
+                let color;
+                if(colorsArr.length === 0){
 
-                let color = colorsArr[colorsArr.length - 1 - index];
-                if(!color) color = colorsArr[colorsArr.length - index];
 
-                hex.textContent = color;
-                rgb.textContent = hexToRgb(color);
-                selected_color.style.backgroundColor = color;
+                    hex.textContent = '';
+                    rgb.textContent = '';
+                    selected_color.style.backgroundColor = '#FFF';
+                }
+                else{
+                    color = colorsArr[colorsArr.length - 1 - index];
+                    if(!color) color = colorsArr[colorsArr.length - index];
+
+                    hex.textContent = color;
+                    rgb.textContent = hexToRgb(color);
+                    selected_color.style.backgroundColor = color;
+                }
+                
+
+
+                
                 
                 for(let i = 0; i < 10; i++){
                     recent_box[i].style.backgroundColor = '';
@@ -132,7 +145,7 @@ delete_color.addEventListener('click', () => {
                 }
 
                 chrome.storage.sync.set({ colorsArr });
-                
+
             }
         })
     })
