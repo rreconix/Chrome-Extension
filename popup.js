@@ -113,6 +113,13 @@ delete_color.addEventListener('click', () => {
         recent_box.forEach((el, index) => {
             if(el.classList.contains('active')){
                 colorsArr.splice(colorsArr.length - 1 - index, 1);
+
+                let nextEl = colorsArr[index];
+
+                hex.textContent = parseColor(nextEl.style.backgroundColor);
+                rgb.textContent = nextEl.style.backgroundColor;
+                selected_color.style.backgroundColor = nextEl.style.backgroundColor;
+
                 for(let i = 0; i < 10; i++){
                     recent_box[i].style.backgroundColor = '';
                     recent_box[i].style.borderColor = '';
