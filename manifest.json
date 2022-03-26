@@ -1,7 +1,7 @@
 {
     "name": "Color picker",
     "description": "Finds the color under your cursor in HEX and RGB form",
-    "version": "2.0",
+    "version": "3.0",
     "manifest_version": 3,
     "permissions": ["storage"],
     "action": {
