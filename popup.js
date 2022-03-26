@@ -115,11 +115,7 @@ delete_color.addEventListener('click', () => {
                 colorsArr.splice(colorsArr.length - 1 - index, 1);
                 let color;
                 if(colorsArr.length === 0){
-
-
-                    hex.textContent = '';
-                    rgb.textContent = '';
-                    selected_color.style.backgroundColor = '#FFF';
+                    cover.style.display = 'block';
                 }
                 else{
                     color = colorsArr[colorsArr.length - 1 - index];
